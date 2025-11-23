@@ -1,11 +1,10 @@
 version: '3'
 
 vars:
-  K8S_VERSION: rancher/k3s:v1.23.8-k3s2
-
+  K8S_VERSION: rancher/k3s:v1.32.1-k3s1
 tasks:
   install-prerequisites:
-    desc: Install prerequisites (docker, kubectl, flux, k3d)
+    desc: Install prerequisites (docker, kubectl, flux, k3d, helm)
     cmds:
       # Update packages
       - sudo apt-get update
@@ -17,10 +16,15 @@ tasks:
       - sudo mv kubectl /usr/local/bin/
       # Install k3d
       - curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-      # Install Flux CLI
-      - curl -s https://fluxcd.io/install.sh | sudo bash
+      # Install Flux CLI if not already installed
+      - command -v flux >/dev/null 2>&1 || curl -s https://fluxcd.io/install.sh | sudo bash
+      # Verify Flux installation
+      - flux --version
+      # Install Helm CLI if not already installed
+      - command -v helm >/dev/null 2>&1 || curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      # Verify Helm installation
+      - helm version
     silent: true
-
   k8s:create-cluster1:
     desc: Create a local k3s cluster (cluster-1)
     cmds:

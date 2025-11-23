@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: kyverno
         namespace: flux-system
-      version: "2.x.x"
+      version: "2.0.0"
   interval: 1h0m0s
   dependsOn:
     - name: kyverno

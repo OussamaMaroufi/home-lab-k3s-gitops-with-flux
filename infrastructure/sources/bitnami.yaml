@@ -1,8 +1,13 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: bitnami
+  namespace: flux-system
 spec:
   interval: 30m
   url: https://charts.bitnami.com/bitnami
+
+  # HelmRepository: A source of packaged Helm charts (.tgz). Used by Flux to deploy 3rd-party charts via HelmRelease. Updates automatically from the remote repo.
+  #GitRepository: A source of raw Kubernetes manifests, Kustomize overlays, or Helm charts stored in Git. Used by Flux via Kustomization or local charts. Updates when Git commits change.
+  #Key difference: HelmRepository = ready-made charts; GitRepository = your own manifests or charts in Git.

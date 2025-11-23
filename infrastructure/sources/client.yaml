@@ -6,6 +6,6 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: https://github.com/terotuomala/k8s-create-react-app-example
+  url: https://github.com/OussamaMaroufi/k8s-vite-react-example.git
   ref:
     branch: main
