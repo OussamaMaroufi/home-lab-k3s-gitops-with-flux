@@ -24,6 +24,11 @@ tasks:
       - command -v helm >/dev/null 2>&1 || curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
       # Verify Helm installation
       - helm version
+      # Inslall k9s utility
+      - command -v k9s >/dev/null 2>&1 || wget https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_linux_amd64.deb
+      - sudo apt install ./k9s_linux_amd64.deb
+      - rm k9s_linux_amd64.deb
+      - k9s version
     silent: true
   k8s:create-cluster1:
     desc: Create a local k3s cluster (cluster-1)
@@ -88,7 +93,7 @@ tasks:
     deps: [k8s:use-local-k3s-context]
     desc: Trigger a sync of the flux-system and apply changes to local k3s cluster (cluster-1)
     cmds:
-      - flux reconcile kustomization flux-system --with-source
+      - flux reconcile kustomization flux-system --with-source --timeout=10m
 
   flux:get-helmreleases:
     deps: [k8s:use-local-k3s-context]
@@ -113,3 +118,30 @@ tasks:
     desc: List all Git repositories and their status in local k3s cluster (cluster-1)
     cmds:
       - flux get sources git -A
+  k9s:launch:
+    deps: [ k8s:use-local-k3s-context ]
+    desc: Launch k9s for interactive cluster exploration
+    cmds:
+      - k9s
+
+  k9s:launch-flux-system:
+    deps: [ k8s:use-local-k3s-context ]
+    desc: Launch k9s in flux-system namespace
+    cmds:
+      - k9s -n flux-system
+
+  k9s:launch-client:
+    deps: [ k8s:use-local-k3s-context ]
+    desc: Launch k9s in client namespace
+    cmds:
+      - k9s -n client
+  k9s:tips:
+    desc: Useful k9s commands inside the UI
+    cmds:
+      - "Press :ns → switch namespace"
+      - "Press l → view pod logs"
+      - "Press d → delete a pod"
+      - "Press v → view pod YAML"
+      - "Press ctrl+c → exit k9s"
+      - "Use arrows or / → search resources"
+
