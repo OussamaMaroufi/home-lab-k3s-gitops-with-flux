@@ -1,0 +1,23 @@
+---
+# ConfigMap with OpenTelemetry configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-otel-config
+  namespace: ingress-nginx
+data:
+  opentelemetry.toml: |
+    [exporters.otlp]
+    protocols_grpc_endpoint = "localhost:4317"
+    
+    [processors.batch]
+    timeout = "10s"
+    send_batch_size = 1024
+    
+    [receivers.otlp]
+    protocols_grpc_bind_address = "0.0.0.0:4317"
+    
+    [service]
+    pipelines_traces_receivers = ["otlp"]
+    pipelines_traces_processors = ["batch"]
+    pipelines_traces_exporters = ["otlp"]

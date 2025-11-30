@@ -3,8 +3,10 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: ingress-nginx
+  namespace: flux-system
 spec:
   releaseName: ingress-nginx
+  targetNamespace: ingress-nginx
   chart:
     spec:
       chart: nginx-ingress-controller
@@ -17,17 +19,45 @@ spec:
   install:
     remediation:
       retries: 3
+  upgrade:
+    remediation:
+      retries: 3
   # Default values
   # https://github.com/bitnami/charts/blob/master/bitnami/nginx-ingress-controller/values.yaml
   values:
+    extraVolumes:
+      - name: otel-config
+        configMap:
+          name: nginx-otel-config
+          defaultMode: 0644
+
+    extraVolumeMounts:
+      - name: otel-config
+        mountPath: /etc/ingress-controller/telemetry
+        readOnly: true
     image:
+      registry: docker.io
       repository: "bitnamilegacy/nginx-ingress-controller"
-      tag: "1.13.1"  # Adjust based on what's available
+      tag: "1.13.1"
+      pullPolicy: IfNotPresent
+
     service:
       type: LoadBalancer
+      # Optional: Set a static LoadBalancer IP if available
+      # loadBalancerIP: "x.x.x.x"
+
     metrics:
       enabled: true
+      service:
+        type: ClusterIP
+        port: 10254
+
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "10254"
 
+    # Replica count
+    replicaCount: 1
+
+    # Optional: Add additional environment variables
+    extraEnv: []
