@@ -20,6 +20,9 @@ spec:
   # Default values
   # https://github.com/bitnami/charts/blob/master/bitnami/nginx-ingress-controller/values.yaml
   values:
+    image:
+      repository: "bitnamilegacy/nginx-ingress-controller"
+      tag: "1.13.1"  # Adjust based on what's available
     service:
       type: LoadBalancer
     metrics:
